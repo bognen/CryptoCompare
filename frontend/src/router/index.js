@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
-import Companies from '../views/companies/Companies.vue'
+import CompanyList from '../views/companies/CompanyList.vue'
+import Company from '../views/companies/Company.vue'
 
 Vue.use(VueRouter)
 
@@ -13,8 +14,13 @@ Vue.use(VueRouter)
   },
   {
     path: '/companies',
-    name: 'Companies',
-    component: Companies
+    name: 'CompanyList',
+    component: CompanyList
+  },
+  {
+    path: '/company/:id',
+    name: 'Company',
+    component: Company
   },
   {
     path: '/about',
