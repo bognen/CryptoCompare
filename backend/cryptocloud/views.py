@@ -38,8 +38,12 @@ def all_coins(request):
             "name": c.name,
             "token": c.token,
             "image": c.image,
+            "algorithm": c.algorithm,
+            "website": c.website,
+            "description": c.description,
             "max_supply": c.maxSupply,
             "start_date": c.startDate,
+            "coinGecko": c.coinGecko
         })
 
     return JsonResponse(result, safe=False)
