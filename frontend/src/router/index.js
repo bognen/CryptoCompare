@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import CompanyList from '../views/companies/CompanyList.vue'
 import Company from '../views/companies/Company.vue'
+import CoinList from '../views/coins/CoinList.vue'
 
 Vue.use(VueRouter)
 
@@ -16,6 +17,11 @@ Vue.use(VueRouter)
     path: '/companies',
     name: 'CompanyList',
     component: CompanyList
+  },
+     {
+    path: '/coins',
+    name: 'CoinList',
+    component: CoinList
   },
   {
     path: '/company/:id',

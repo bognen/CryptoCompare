@@ -11,12 +11,15 @@ class Coin(models.Model):
     name = models.CharField(max_length=128, default="KwaCoin")
     token = models.CharField(max_length=128, default="KwaToken")
     image = models.CharField(max_length=128, null=True, blank=True)
-    maxSupply = models.DecimalField(max_digits=15, decimal_places=2)
+    algorithm = models.CharField(max_length=128, null=True, blank=True)
+    website = models.CharField(max_length=128, null=True, blank=True)
+    description = models.CharField(max_length=5000, null=True, blank=True)
+    maxSupply = models.DecimalField(max_digits=15, decimal_places=2, default=0.00)
     startDate = models.DateField()
+    coinGecko = models.CharField(max_length=128, null=True, blank=True)
     # DYNAMIC FIELDS
     # Current Price
     # Projection Price
-    # Current Supply
 
 
 class CloudCompany(models.Model):
