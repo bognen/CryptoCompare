@@ -61,6 +61,10 @@
 </template>
 
 <script>
+    //**
+    // Need to refactor and get list of coins ids dynamically
+    // And find a different way to set bitcoin as default
+
     import Vue from 'vue'
     import axios from 'axios';
     let numeral = require("numeral");
@@ -103,7 +107,6 @@
         created() {
             axios.all([coinInfoRequest, coinPriceRequest,coinSupplyRequest]).then(axios.spread((...responses) => {
                 this.coins = this.processResponse(responses[0].data, responses[1].data, responses[2].data)
-              // use/access the results
             })).catch(errors => {
                 console.log(errors);
             })
