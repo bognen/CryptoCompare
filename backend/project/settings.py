@@ -96,6 +96,13 @@ DATABASES = {
         # 'PASSWORD': config.password_admin,
         # 'HOST': config.host,
         # 'PORT': config.port,
+    },
+    'ml':{
+        'ENGINE': 'djongo',
+        'ENFORCE_SCHEMA': True,
+        'NAME': 'priceforecast',
+        'HOST': 'localhost',
+        'PORT': 27017,
     }
 }
 
