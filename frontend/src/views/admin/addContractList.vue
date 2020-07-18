@@ -64,7 +64,6 @@
         },
         // Fetches posts when the component is created.
         created() {
-            //axios.all([companiesRequest, coinRequest, contractRequest]).then(axios.spread((...responses) => {
             axios.get("http://localhost:8000/api/contracts").then(response => {
                 //this.companies = responses[0].data;
                 //this.coins = responses[1].data;

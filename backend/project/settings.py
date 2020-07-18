@@ -89,7 +89,7 @@ DATABASES = {
         #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE': 'djongo',
         'ENFORCE_SCHEMA': True,
-        'NAME': 'test',
+        'NAME': 'contractdb',
         'HOST': 'localhost',
         'PORT': 27017,
         # 'USER': config.username_admin,

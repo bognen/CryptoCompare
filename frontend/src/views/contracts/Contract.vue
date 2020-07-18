@@ -14,31 +14,31 @@
          <!----------------------------------------------------------------------------------->
         <div class="container" style="margin: 25px auto 0; width:65%; background-color: white; padding-top: 1rem; padding-bottom: 1rem">
             <div class="row">
-                <img class="col-lg-2 single-contract-image" src="/img/companies/iqmining.png" style="max-width: 135px;"/>
+                <img class="col-lg-2 single-contract-image" v-bind:src="contract.company.image" style="max-width: 135px;"/>
                 <div class="col-lg-10 single-contract-name-duration">
-                    <span class="single-contract-name">IMG-2910 Cloud Mining &nbsp;&nbsp;&nbsp;</span>
-                    <span class="single-contract-duration">60 Months</span>
+                    <span class="single-contract-name">{{contract.name}} &nbsp;&nbsp;&nbsp;</span>
+                    <span class="single-contract-duration">{{contract.duration==9999?"Lifetime":contract.duration+" Months"}}</span>
 
             <div class="row single-contract-top-row">
                 <div class="col-lg-2 offset-lg-2 col-md-6 col-sm-6 single-contract-main-col">
                     <div class="single-contract-column-header">Price:</div>
-                    <div class="single-contract-column-value">$ 210</div>
+                    <div class="single-contract-column-value">$ {{contract.price}}</div>
                 </div>
                 <div class="col-lg-2 col-md-6 col-sm-6 single-contract-main-col single-contract-sm-last">
                     <div class="single-contract-column-header">Hash Rate:</div>
-                    <div class="single-contract-column-value">1,000.0 GH/s</div>
+                    <div class="single-contract-column-value">{{contract.hashRate}} GH/s</div>
                 </div>
                 <div class="col-lg-2 col-md-6 col-sm-6 single-contract-main-col">
                     <div class="single-contract-column-header">Mines:</div>
-                    <div class="single-contract-column-value">Bitcoin</div>
+                    <div class="single-contract-column-value">{{contract.coin.name}}</div>
                 </div>
                 <div class="col-lg-2 col-md-6 col-sm-6 single-contract-main-col single-contract-sm-last">
                     <div class="single-contract-column-header">Company:</div>
-                    <div class="single-contract-column-value">IQ Mining</div>
+                    <div class="single-contract-column-value">{{contract.company.title}}</div>
                 </div>
                 <div class="col-lg-2 col-md-12 col-sm-12 single-contract-main-col single-contract-last-col">
                     <div class="single-contract-column-header">Website:</div>
-                    <div class="single-contract-column-value">MyWeb</div>
+                    <div class="single-contract-column-value"><a :href="`${contract.company.website}`" target="_blank">Visit Website</a></div>
                 </div>
             </div>
                 </div>
@@ -46,34 +46,34 @@
 
             <div class="row" style="margin-top: 0.75rem; margin-bottom: 0.75rem; padding-left: 15px; padding-right: 15px">
                 <div class="col-lg-3 col-md-6 col-sm-6 single-contract-label-column">
-                    <div class="label-info">Fee Per Day</div>
+                    <div class="label-info">Cost Per Day</div>
                     <div class="label-text">$ 0.15</div>
-                    <div class="label-info">Fee Per Day</div>
+                    <div class="label-info">Return Per Day</div>
                     <div class="label-text">$ 0.15</div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 single-contract-label-column">
-                    <div class="label-info">Fee Per Day</div>
+                    <div class="label-info">Cost Per Week</div>
                     <div class="label-text">$ 0.15</div>
-                    <div class="label-info">Fee Per Day</div>
+                    <div class="label-info">Return Per Week</div>
                     <div class="label-text">$ 0.15</div>
                 </div>
 
                  <div class="col-lg-3 col-md-6 col-sm-6 single-contract-label-column">
-                    <div class="label-info">Fee Per Day</div>
+                    <div class="label-info">Cost Per Month</div>
                     <div class="label-text">$ 0.15</div>
-                    <div class="label-info">Fee Per Day</div>
+                    <div class="label-info">Return Per Month</div>
                     <div class="label-text">$ 0.15</div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-sm-6 single-contract-label-column">
-                    <div class="label-info">Fee Per Day</div>
+                    <div class="label-info">Payback Period</div>
                     <div class="label-text">$ 0.15</div>
-                    <div class="label-info">Fee Per Day</div>
+                    <div class="label-info">Profit</div>
                     <div class="label-text">$ 0.15</div>
                 </div>
             </div>
             <!------------------------------------------------------------------------->
             <div>
-                This Bitcoin cloud mining contract is provided by OXBTC, a cloud mining company based in China. The BTC Cloud Mining 10TH/s contract, as the name suggests, has a power rating of 10 TH/s and costs $185 for 300 days duration.(Run by INNOSILICON Miner T2T，PPS payouts will be settled daily)
+                {{contract.description}}
             </div>
             <!------------------------------------------------------------------------->
             <div style="margin: 1rem 1rem 1rem 1rem; background-color:#f5f5f5">
@@ -84,8 +84,25 @@
 </template>
 
 <script>
+    import axios from 'axios';
+
     export default {
-        name: "Contract"
+        name: "Contract",
+        data(){
+            return{
+                contract:null
+            }
+        },
+       created() {
+            axios.get("http://localhost:8000/api/contract/"+this.$route.params.id).then(response => {
+                this.contract = JSON.parse(response.data);
+                console.log(this.contract)
+            })
+                .catch(e => {
+                    this.errors.push(e)
+                })
+        },
+
     }
 </script>
 

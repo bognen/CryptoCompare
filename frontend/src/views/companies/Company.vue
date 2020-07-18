@@ -62,7 +62,7 @@
                   {{company.description}}
                 </div>
                    <h3 style="margin-left: 0.5rem">Offered Contracts:</h3>
-                   <div class="row contract-row" style="margin-left: 0.5rem!important;">
+                   <div class="row contract-row" style="margin-left: 0.5rem!important; ; margin-bottom: 0.5rem!important;">
                         <div v-for="(cc, index) in coinContract" :key="cc.CoinToken" class="col-md-2 coin-bookmark pt-2"
                              @click='show = cc.CoinName, activeDiv=index++'
                              v-bind:style="{'background-color':bkgColor[index],'border-bottom':brdBtm[index]}">
@@ -72,6 +72,8 @@
                    </div>
                    <div  v-for="cc in coinContract" :key="cc.CoinName" v-show="show === cc.CoinName" class="contract-row">
                        <!---------------------------------------------------------------------------------->
+                   <SingleContractComponent v-for="contract in cc.Contracts" :key="contract._id" v-show="show === cc.CoinName"  :contractInfo="contract" @cCheck="checkAction"></SingleContractComponent>
+                       <!--
                        <div class="row contract-row mt-3 ml-1 mr-2" v-for="contract in cc.Contracts" :key="contract._id" >
                             <div class="col-lg-2 col-md-12 col-sm-12 company-contract-image-column">
                                 <img class="company-contract-image-icon" v-bind:src="cc.CoinImage" />
@@ -99,7 +101,7 @@
                                 </div>
                             </div>
                         </div>
-                       <!---------------------------------------------------------------------------------->
+                        <---------------------------------------------------------------------------------->
                    </div>
 
               </div>
@@ -111,6 +113,7 @@
 
 <script>
     import axios from 'axios';
+    import ContractComponent from "./../contracts/ContractComponent";
 
     let companyRequestUrl = "http://localhost:8000/api/company/";
     let coinContractRequestUrl = "http://localhost:8000/api/filtered-contract/";
@@ -152,6 +155,10 @@
             }
         },
 
+        components:{
+            SingleContractComponent: ContractComponent,
+        },
+
         methods:{
             testFunc: function(active, nonActive){
                 let len = this.coinContract.length;
@@ -165,16 +172,20 @@
                   }
 
                   return result;
-            }
+            },
+             checkAction(contract) {
+                 //this.$emit('contractChecked', contract);
+                 this.$root.$emit('toggle', contract);
+             }
         }
     }
 </script>
 
 <style>
     .card{
-	width:65%;
-	height:auto;
-	border: none!important;
+        width:65%;
+        height:auto;
+        border: none!important;
     }
 
     .coin-bookmark-token{
@@ -228,13 +239,10 @@
         border-right: none;
     }
 
-    .company-contract-image-icon{
-        max-width: 75px;
-        max-height: 75px;
-    }
-
     .contract-row{
         width: 100%;
+        margin-left: 1.5rem!important;
+        margin-right: 1.5rem!important;
     }
 
     .coin-bookmark{
@@ -244,74 +252,13 @@
         font-weight: bold;
     }
 
-    .company-contract-column-block{
-        text-align: right;
-        border-right: 1px solid #b0b0b0;
-    }
-
-
-    /* STYLES FROM CONTRACT LIST */
-    .image-column{
-    padding-left: 0!important;
-    padding-right: 0!important;
-    }
-
-    .main-column{
-        padding-left: 0!important;
-    }
-    .on-top-column{
-        margin-top: 0.5rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .last-block{
-        border-right: none;
-    }
-
-    .contract-name{
-        color: #337ab7;
-        font-size: 20px;
-        font-weight: bold;
-    }
-    .contract-duration{
-        color: #82ae52;
-        font-size: 18px;
-        font-family: open sans condensed,sans-serif;
-    }
-    .column-value{
-        color: #000;
-        font-size: 16px;
-        font-weight: bold;
-    }
     @media (max-width: 992px) {
-      .company-contract-image-column {
-          display: none;
-        }
-        .on-top-column{
-            text-align: center;
-        }
-
-        .company-contract-column-block{
-            text-align: left;
-        }
-
         .coin-bookmark-token{
             display: block;
         }
 
         .coin-bookmark-full-name{
             display: none;
-        }
-        .last-when-small{
-            border-right: none;
-        }
-    }
-
-    @media (max-width: 578px) {
-
-        .company-contract-column-block{
-            text-align:left;
-            width: 50%!important;
         }
     }
 </style>
