@@ -38,7 +38,7 @@ Vue.use(VueRouter)
     component: ContractList
   },
  {
-    path: '/contract',
+    path: '/contract/:id',
     name: 'Contract',
     component: Contract
   },
@@ -62,6 +62,7 @@ Vue.use(VueRouter)
     name: 'addContract',
     component: addContract
   },
+
 
 ]
 

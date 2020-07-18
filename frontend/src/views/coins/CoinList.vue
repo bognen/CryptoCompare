@@ -71,7 +71,8 @@
 
     let coinInfo = 'http://localhost:8000/api/coins/';
     let coinPrice = 'https://api.coingecko.com/api/v3/simple/price';
-    let coinSupply = 'https://api.coingecko.com/api/v3/coins/markets'
+    let coinSupply = 'https://api.coingecko.com/api/v3/coins/markets';
+    let coinParams = 'https://mineable-coins.p.rapidapi.com/coins?list=BTC,BCH,LTC,ETH,DASH,ZEC,XMR,BSV,XRP';
 
     const coinInfoRequest = axios.get(coinInfo);
     const coinPriceRequest = axios.get(coinPrice, {
@@ -86,6 +87,13 @@
             ids: 'bitcoin,bitcoin-cash,litecoin,ethereum,dash,zcash,monero,bitcoin-cash-sv,ripple'
         }
     });
+    const coinParamsRequest = axios.get(coinParams, {
+        "method": "GET",
+        "headers": {
+            "x-rapidapi-host": "mineable-coins.p.rapidapi.com",
+            "x-rapidapi-key": "57c7a0bfecmsh6bd72873440fb7ep1be0bfjsned54b9a32281"
+        }
+    });
 
     // Number formatter
     Vue.filter("formatNumber", function (value) {
@@ -98,15 +106,19 @@
             return {
                 coins: [],
                 errors: [],
-                show: "5eaf87134a0e48326438dde6",
+                //show: "5eaf87134a0e48326438dde6",
+                show: null,
                 activeDiv: 0
             }
         },
 
         // Fetches posts when the component is created.
         created() {
-            axios.all([coinInfoRequest, coinPriceRequest,coinSupplyRequest]).then(axios.spread((...responses) => {
-                this.coins = this.processResponse(responses[0].data, responses[1].data, responses[2].data)
+            axios.all([coinInfoRequest, coinPriceRequest,coinSupplyRequest, coinParamsRequest]).then(axios.spread((...responses) => {
+                this.coins = this.processResponse(responses[0].data, responses[1].data, responses[2].data);
+                //console.log(this.coins[0].id)
+                this.show = this.coins[0].id;
+                console.log(responses[3].data)
             })).catch(errors => {
                 console.log(errors);
             })
