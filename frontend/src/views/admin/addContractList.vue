@@ -64,7 +64,7 @@
         },
         // Fetches posts when the component is created.
         created() {
-            axios.get("http://localhost:8000/api/contracts").then(response => {
+            axios.get(process.env.VUE_APP_DATA_URL+"/api/contracts").then(response => {
                 //this.companies = responses[0].data;
                 //this.coins = responses[1].data;
                 this.contracts = JSON.parse(response.data);
@@ -81,7 +81,7 @@
            async  deleteContract(id){
                 console.log(id)
                 alert('');
-                axios.delete('http://localhost:8000/api/deletecontract/'+id).then(response => {
+                axios.delete(process.env.VUE_APP_DATA_URL+'/api/deletecontract/'+id).then(response => {
                        console.log(response.data);
                        //this.$router.push({ path: this.$route.path })
                        window.location.href = '/admin/contracts'

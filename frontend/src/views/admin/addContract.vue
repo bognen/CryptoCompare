@@ -75,9 +75,9 @@
 <script>
     import axios from 'axios';
 
-    let companyRequestUrl = "http://localhost:8000/api/companies/";
-    let coinRequestUrl = "http://localhost:8000/api/coins/";
-    let contractRequestUrl = "http://localhost:8000/api/contract/";
+    let companyRequestUrl = process.env.VUE_APP_DATA_URL+"/api/companies/";
+    let coinRequestUrl = process.env.VUE_APP_DATA_URL+"/api/coins/";
+    let contractRequestUrl = process.env.VUE_APP_DATA_URL+"/api/contract/";
 
     const companiesRequest = axios.get(companyRequestUrl);
     const coinRequest = axios.get(coinRequestUrl);
@@ -117,7 +117,7 @@
             saveContract(){
                 // If if route parameter ID is not present, save the contract
                 if(this.$route.params.id==null || this.$route.params.id=='undefined') {
-                    axios.post('http://localhost:8000/api/contracts/', this.contract)
+                    axios.post(process.env.VUE_APP_DATA_URL+'/api/contracts/', this.contract)
                         .then(response => {
                             console.log(response.status)
                             if(response.status==201){
@@ -131,7 +131,7 @@
                         })
                 // If there is route parameter ID, update the contract
                 }else{
-                     axios.put('http://localhost:8000/api/contracts/', this.contract)
+                     axios.put(process.env.VUE_APP_DATA_URL+'/api/contracts/', this.contract)
                         .then(response => {
                              console.log(response.status)
                              if(response.status==201) {

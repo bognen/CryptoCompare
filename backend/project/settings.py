@@ -25,7 +25,7 @@ SECRET_KEY = '*n9m&g1&#%#1kqxgz73+8b4^xz63+^0wy!je_amini_ky=(%y4'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -53,11 +53,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ORIGIN_WHITELIST = [
-    "http://localhost:8080",
-    "http://localhost:8081",
-    "http://localhost:8082",
-]
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'project.urls'
 
@@ -90,6 +86,7 @@ DATABASES = {
         'ENGINE': 'djongo',
         'ENFORCE_SCHEMA': True,
         'NAME': 'contractdb',
+        #'HOST': 'mongodb.local',
         'HOST': 'localhost',
         'PORT': 27017,
         # 'USER': config.username_admin,
@@ -97,13 +94,13 @@ DATABASES = {
         # 'HOST': config.host,
         # 'PORT': config.port,
     },
-    'ml':{
-        'ENGINE': 'djongo',
-        'ENFORCE_SCHEMA': True,
-        'NAME': 'priceforecast',
-        'HOST': 'localhost',
-        'PORT': 27017,
-    }
+    # 'ml':{
+    #     'ENGINE': 'djongo',
+    #     'ENFORCE_SCHEMA': True,
+    #     'NAME': 'priceforecast',
+    #     'HOST': 'localhost',
+    #     'PORT': 27017,
+    # }
 }
 
 
