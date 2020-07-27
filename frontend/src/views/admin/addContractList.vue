@@ -40,7 +40,7 @@
                       <td>{{c.hashRate}}</td>
                       <td>{{c.description.substring(0,35)+"..."}}</td>
                       <td>
-                            <a :href="`contract/${c._id}`"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i></a>
+                            <router-link :to="`contract/${c._id}`"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i></router-link>
                       </td>
                       <td>
                             <span class="admin-contract-delete-span" v-on:click="deleteContract(c._id)"><i class="fa fa-trash fa-lg"></i></span>

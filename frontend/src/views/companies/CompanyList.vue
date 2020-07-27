@@ -24,7 +24,7 @@
 
                 <div class="row header-row">
                   <div class="col-sm-12 col-md-12 col-lg-3 inside-card-block last-in-small">
-                      <h5 class="card-title"><a :href="`company/${comp.id}`">{{comp.title}}</a></h5>
+                      <div class="card-title"><router-link :to="`company/${comp.id}`">{{comp.title}}</router-link></div>
                   </div>
 
                   <div class="col-sm-6 col-md-6 col-lg-3 inside-card-block">
@@ -114,7 +114,7 @@
 
 .card-title{
 	color: #3c3ecf;
-	font-size: 1.5rem;
+	font-size: 1rem;
 	font-family: "Arial Black", Gadget, sans-serif;
     text-align: center;
 }

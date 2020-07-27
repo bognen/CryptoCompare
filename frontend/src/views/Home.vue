@@ -13,7 +13,7 @@
                     <p class="text-white pt-20 pb-20">
                         {{contract.description}}
                     </p>
-                    <a :href="`contract/${contract._id}`" class="primary-btn header-btn text-uppercase mb-20">Find Out More</a>
+                    <router-link :to="`contract/${contract._id}`" class="primary-btn header-btn text-uppercase mb-20">Find Out More</router-link>
                 </div>
             </div>
         </div>
@@ -35,7 +35,7 @@
                         </p>
                     </div>
                         <div class="text-center" style="width:70%; margin: 0 auto;">
-                            <a href="/contracts" class="primary-btn header-btn text-uppercase mb-20">Explore Mining Contracts</a>
+                            <router-link to="/contracts" class="primary-btn header-btn text-uppercase mb-20">Explore Mining Contracts</router-link>
                         </div>
                     </div>
                 </div>
@@ -46,6 +46,7 @@
 
 <script>
     import axios from 'axios';
+
     export default {
       name: 'Home',
       data(){
