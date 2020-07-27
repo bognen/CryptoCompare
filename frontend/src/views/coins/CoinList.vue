@@ -61,15 +61,11 @@
 </template>
 
 <script>
-    //**
-    // Need to refactor and get list of coins ids dynamically
-    // And find a different way to set bitcoin as default
-
     import Vue from 'vue'
     import axios from 'axios';
     let numeral = require("numeral");
 
-    let coinInfo = 'http://localhost:8000/api/coins/';
+    let coinInfo = process.env.VUE_APP_DATA_URL+'/api/coins/';
     let coinPrice = 'https://api.coingecko.com/api/v3/simple/price';
     let coinSupply = 'https://api.coingecko.com/api/v3/coins/markets';
     let coinParams = 'https://mineable-coins.p.rapidapi.com/coins?list=BTC,BCH,LTC,ETH,DASH,ZEC,XMR,BSV,XRP';
@@ -91,7 +87,7 @@
         "method": "GET",
         "headers": {
             "x-rapidapi-host": "mineable-coins.p.rapidapi.com",
-            "x-rapidapi-key": "57c7a0bfecmsh6bd72873440fb7ep1be0bfjsned54b9a32281"
+            "x-rapidapi-key": process.env.VUE_APP_RAPID_KEY
         }
     });
 
@@ -106,7 +102,6 @@
             return {
                 coins: [],
                 errors: [],
-                //show: "5eaf87134a0e48326438dde6",
                 show: null,
                 activeDiv: 0
             }

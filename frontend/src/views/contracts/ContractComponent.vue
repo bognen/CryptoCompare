@@ -4,7 +4,7 @@
             <div class="col-lg-2 col-md-12 image-column"><img class="image-icon" v-bind:src="contract.company.image" /></div>
             <div class="col-lg-10 col-md-12 main-column">
                 <div class="on-top-column">
-                    <a :href="`/contract/${contract._id}`"><span class="contract-name">{{contract.name}}</span></a>&nbsp;&nbsp;&nbsp;
+                    <router-link :to="`/contract/${contract._id}`"><span class="contract-name">{{contract.name}}</span></router-link>&nbsp;&nbsp;&nbsp;
                     <span class="contract-duration">{{contract.duration==9999?"Lifetime":contract.duration+" Months"}}</span>
                     <div style="display: inline" class="float-right">
                         <input type="checkbox" v-model="contract.checked" :value="`contract-${contract._id}`" :id="`contract-${contract._id}`" v-on:click='checkedContract(contract)'/>

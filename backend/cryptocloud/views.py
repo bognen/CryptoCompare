@@ -1,15 +1,15 @@
+import json
+import random
+
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.decorators import api_view
-import json
 from bson import ObjectId
 
 # Models and Serializers
 from cryptocloud.models import CloudCompany
-from cryptocloud.serializers import CloudCompanySerializer
 from cryptocloud.models import Coin
-from cryptocloud.serializers import CoinSerializer
 from cryptocloud.models import CloudContract
 from cryptocloud.serializers import ContractSerializer
 from cryptocloud.serializers import ContractSimpleSerializer
@@ -17,6 +17,7 @@ from cryptocloud.serializers import ContractSimpleSerializer
 # Servcices
 from cryptocloud.services import get_number_of_contracts
 from cryptocloud.services import get_mined_coins
+from cryptocloud.services import get_coin_price_prediction
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -160,3 +161,18 @@ def delete_contract(request, contract_id):
         return JsonResponse(response, status=status.HTTP_200_OK)
     except CloudContract.DoesNotExist:
         return JsonResponse(status=status.HTTP_404_NOT_FOUND)
+
+
+# The method returns the most profitable contract
+# For now it just returns random contract
+def get_best_contract(request):
+    pks = CloudContract.objects.values_list('pk', flat=True)
+    random_idx = random.randint(0, len(pks) - 1)
+    contract = CloudContract.objects.get(pk=pks[random_idx])
+    serializer = ContractSerializer(contract)
+    return JsonResponse(JSONEncoder().encode(serializer.data), safe=False)
+
+
+def getPricePrediction(request):
+    result = get_coin_price_prediction()
+    return JsonResponse(result, safe=False)

@@ -18,9 +18,23 @@
     components: {Header, Footer, Toggle},
     methods:{
       removeSelection(){
-        this.$refs.child.contracts.forEach((contract) => {
+        if(this.$refs.child.contracts){
+            this.$refs.child.contracts.forEach((contract) => {
             if(contract.checked) contract.checked=false;
         });
+        }else if(this.$refs.child.coinContract){
+            this.$refs.child.coinContract.forEach((item) => {
+             item.Contracts.forEach((contract) =>{
+                if(contract.checked){
+                  contract.checked=false
+                }
+             })
+        });
+        }else{
+          console.log("None of the child components was found")
+        }
+
+
       }
     }
   }
