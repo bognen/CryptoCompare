@@ -1873,6 +1873,20 @@ h4, h5, h6 {
   right: 20px;
 }
 
+.toggle-close {
+  color: #ffffff;
+  float: right;
+  font-size: 22px;
+}
+
+.toggle-close:hover,
+.toggle-close:focus {
+  /*color: #e4606d;*/
+  color: #7a7a7a;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 /*--------------------------------------------------------------
 # Header
 --------------------------------------------------------------*/
@@ -2830,9 +2844,7 @@ body.mobile-nav-active #mobile-nav-toggle {
 
 @media (max-width: 767.98px) {
   .generic-banner .height {
-    /*height: 400px;*/
-    padding-top: 75px;
-    padding-bottom: 15px;
+    height: 400px;
   }
 }
 
