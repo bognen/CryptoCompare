@@ -1,18 +1,19 @@
 <template>
-    <div class="main-div">
+    <div class="main-div" v-if="contract">
         <section class="banner-area relative">
         <div class="overlay overlay-bg"></div>
         <div class="container">
             <div class="row d-flex align-items-center justify-content-start" style="padding-top: 100px; padding-bottom: 70px">
                 <div class="banner-content col-lg-12 col-md-12">
-                    <h5 class="text-white text-uppercase">The most profitable contract</h5>
+                    <h5 class="text-white text-uppercase">The Deal of The Day</h5>
                     <h1 class="text-uppercase">
-                    name of the contract
+                    {{contract.name}}
                     </h1>
+                    <h4  class="text-white text-uppercase">by {{contract.company.title}}</h4>
                     <p class="text-white pt-20 pb-20">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod temp <br> or incididunt ut labore et dolore magna aliqua. Ut enim ad minim.
+                        {{contract.description}}
                     </p>
-                    <a href="#" class="primary-btn header-btn text-uppercase mb-20">Find Out More</a>
+                    <router-link :to="`contract/${contract._id}`" class="primary-btn header-btn text-uppercase mb-20">Find Out More</router-link>
                 </div>
             </div>
         </div>
@@ -34,7 +35,7 @@
                         </p>
                     </div>
                         <div class="text-center" style="width:70%; margin: 0 auto;">
-                            <a href="#" class="primary-btn header-btn text-uppercase mb-20">Explore Mining Contracts</a>
+                            <router-link to="/contracts" class="primary-btn header-btn text-uppercase mb-20">Explore Mining Contracts</router-link>
                         </div>
                     </div>
                 </div>
@@ -44,11 +45,26 @@
 </template>
 
 <script>
-export default {
-  name: 'Home',
-  props: {
+    import axios from 'axios';
 
-  }
-}
+    export default {
+      name: 'Home',
+      data(){
+          return{
+              contract: null,
+              errors:[]
+        }
+      },
+
+       created() {
+           axios.get(process.env.VUE_APP_DATA_URL+`/api/most-profitable/`)
+            .then(response => {
+                this.contract = JSON.parse(response.data)
+            })
+            .catch(e => {
+                this.errors.push(e)
+            })
+        }
+    }
 </script>
 

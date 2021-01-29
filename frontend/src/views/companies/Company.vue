@@ -11,9 +11,11 @@
                 </div>
             </div>
         </section>
-        <!----------------------------------------------------------------------------------->
-       <div style="margin-top:0.75rem;">
-              <div class="card mb-3" style="margin: 0 auto;">
+       <!----------------------------------------------------------------------------------->
+
+        <div style="margin-top:0.75rem;">
+              <tile :loading="isLoading" v-if="isLoading"></tile>
+              <div class="card mb-3" style="margin: 0 auto;" v-if="!isLoading">
               <div class="row no-gutters">
                 <div class="col-md-3">
                   <img v-bind:src="company.image" class="card-img" alt="...">
@@ -62,7 +64,7 @@
                   {{company.description}}
                 </div>
                    <h3 style="margin-left: 0.5rem">Offered Contracts:</h3>
-                   <div class="row contract-row" style="margin-left: 0.5rem!important;">
+                   <div class="row contract-row" style="margin-left: 0.5rem!important; ; margin-bottom: 0.5rem!important;">
                         <div v-for="(cc, index) in coinContract" :key="cc.CoinToken" class="col-md-2 coin-bookmark pt-2"
                              @click='show = cc.CoinName, activeDiv=index++'
                              v-bind:style="{'background-color':bkgColor[index],'border-bottom':brdBtm[index]}">
@@ -72,34 +74,7 @@
                    </div>
                    <div  v-for="cc in coinContract" :key="cc.CoinName" v-show="show === cc.CoinName" class="contract-row">
                        <!---------------------------------------------------------------------------------->
-                       <div class="row contract-row mt-3 ml-1 mr-2" v-for="contract in cc.Contracts" :key="contract._id" >
-                            <div class="col-lg-2 col-md-12 col-sm-12 company-contract-image-column">
-                                <img class="company-contract-image-icon" v-bind:src="cc.CoinImage" />
-                            </div>
-                            <div class="col-lg-10 col-md-12 col-sm-12 main-column">
-                                <div class="on-top-column"><a href="/contract"><span class="contract-name">{{contract.name}}</span></a>&nbsp;&nbsp;&nbsp;
-                                     <span class="contract-duration">{{contract.duration==9999?"Lifetime":contract.duration+" Months"}}</span></div>
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-6 col-sm-6 company-contract-column-block">
-                                        <div class="column-header">Price:</div>
-                                        <div class="column-value">$ {{contract.price}}</div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-6 col-sm-6 company-contract-column-block last-when-small">
-                                        <div class="column-header">Hash Rate:</div>
-                                        <div class="column-value">{{contract.hashRate}} GH/s</div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-6 col-sm-6 company-contract-column-block">
-                                        <div class="column-header">Mines:</div>
-                                        <div class="column-value">{{cc.CoinName}}</div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-6 col-sm-6 company-contract-column-block last-block">
-                                        <div class="column-header">Company:</div>
-                                        <div class="column-value">{{contract.company.title}}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                       <!---------------------------------------------------------------------------------->
+                   <SingleContractComponent v-for="contract in cc.Contracts" :key="contract._id" v-show="show === cc.CoinName"  :contractInfo="contract" @cCheck="checkAction"></SingleContractComponent>
                    </div>
 
               </div>
@@ -110,10 +85,14 @@
 </template>
 
 <script>
+    import Vue from 'vue'
     import axios from 'axios';
+    import ContractComponent from "./../contracts/ContractComponent";
+    import VueSpinners from 'vue-spinners'
+    Vue.use(VueSpinners)
 
-    let companyRequestUrl = "http://localhost:8000/api/company/";
-    let coinContractRequestUrl = "http://localhost:8000/api/filtered-contract/";
+    let companyRequestUrl = process.env.VUE_APP_DATA_URL+"/api/company/";
+    let coinContractRequestUrl = process.env.VUE_APP_DATA_URL+"/api/filtered-contract/";
 
     export default {
         name: "Company",
@@ -124,7 +103,8 @@
                 coinContract: [],
                 show: '',
                 activeDiv: 0,
-                errors: []
+                errors: [],
+                isLoading: true,
             }
         },
 
@@ -135,6 +115,7 @@
                     this.company =  responses[0].data
                     this.coinContract = responses[1].data
                     this.show = this.coinContract[0].CoinName
+                    this.isLoading = false
 
                 }))
                 .catch(e => {
@@ -152,6 +133,10 @@
             }
         },
 
+        components:{
+            SingleContractComponent: ContractComponent,
+        },
+
         methods:{
             testFunc: function(active, nonActive){
                 let len = this.coinContract.length;
@@ -165,16 +150,20 @@
                   }
 
                   return result;
-            }
+            },
+             checkAction(contract) {
+                 //this.$emit('contractChecked', contract);
+                 this.$root.$emit('toggle', contract);
+             }
         }
     }
 </script>
 
 <style>
     .card{
-	width:65%;
-	height:auto;
-	border: none!important;
+        width:65%;
+        height:auto;
+        border: none!important;
     }
 
     .coin-bookmark-token{
@@ -228,90 +217,26 @@
         border-right: none;
     }
 
-    .company-contract-image-icon{
-        max-width: 75px;
-        max-height: 75px;
-    }
-
     .contract-row{
         width: 100%;
+        margin-left: 1.5rem!important;
+        margin-right: 1.5rem!important;
     }
 
     .coin-bookmark{
         border: 1px solid #777777;
         cursor: pointer;
-        font-size: 17px;
+        font-size: 0.8rem;
         font-weight: bold;
     }
 
-    .company-contract-column-block{
-        text-align: right;
-        border-right: 1px solid #b0b0b0;
-    }
-
-
-    /* STYLES FROM CONTRACT LIST */
-    .image-column{
-    padding-left: 0!important;
-    padding-right: 0!important;
-    }
-
-    .main-column{
-        padding-left: 0!important;
-    }
-    .on-top-column{
-        margin-top: 0.5rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .last-block{
-        border-right: none;
-    }
-
-    .contract-name{
-        color: #337ab7;
-        font-size: 20px;
-        font-weight: bold;
-    }
-    .contract-duration{
-        color: #82ae52;
-        font-size: 18px;
-        font-family: open sans condensed,sans-serif;
-    }
-    .column-value{
-        color: #000;
-        font-size: 16px;
-        font-weight: bold;
-    }
     @media (max-width: 992px) {
-      .company-contract-image-column {
-          display: none;
-        }
-        .on-top-column{
-            text-align: center;
-        }
-
-        .company-contract-column-block{
-            text-align: left;
-        }
-
         .coin-bookmark-token{
             display: block;
         }
 
         .coin-bookmark-full-name{
             display: none;
-        }
-        .last-when-small{
-            border-right: none;
-        }
-    }
-
-    @media (max-width: 578px) {
-
-        .company-contract-column-block{
-            text-align:left;
-            width: 50%!important;
         }
     }
 </style>
