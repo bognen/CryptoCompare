@@ -12,7 +12,8 @@
             </div>
         </section>
         <!----------------------------------------------------------------------------------->
-       <div v-for="comp in companies" :key="comp.id" style="margin-top:0.75rem;">
+      <bounce :loading="isLoading" v-if="isLoading"></bounce>
+      <div v-for="comp in companies" :key="comp.id" style="margin-top:0.75rem;">
         <div class="card mb-3" style="margin:0 auto;">
           <div class="row no-gutters align-items-center">
             <div class="col-sm-12 col-md-12 col-lg-2">
@@ -22,28 +23,29 @@
               <div class="card-body">
 
                 <div class="row header-row">
-                  <div class="col-sm-12 col-md-12 col-lg-4 inside-card-block last-in-small">
-                      <h5 class="card-title"><a :href="`company/${comp.id}`">{{comp.title}}</a></h5>
+                  <div class="col-sm-12 col-md-12 col-lg-3 inside-card-block last-in-small">
+                      <div class="card-title"><router-link :to="`company/${comp.id}`">{{comp.title}}</router-link></div>
                   </div>
 
-                  <div class="col-sm-6 col-md-6 col-lg-2 inside-card-block">
+                  <div class="col-sm-6 col-md-6 col-lg-3 inside-card-block">
                       <div class="card-text-header">Location: </div>
                       <div class="card-text">{{comp.location}}</div>
                   </div>
 
-                  <div class="col-sm-6 col-md-6 col-lg-2 inside-card-block last-in-small">
+                  <div class="col-sm-6 col-md-6 col-lg-3 inside-card-block last-in-small">
                     <div class="card-text-header">Contracts:</div>
-                    <div class="card-text">17</div>
+                    <div class="card-text">{{comp.num_of_contracts}}</div>
                   </div>
-                  <div class="col-sm-6 col-md-6 col-lg-2 inside-card-block">
+                  <div id="founded-block" class="col-sm-6 col-md-6 col-lg-2 inside-card-block">
                     <div class="card-text-header">Founded:</div>
                     <div class="card-text">{{comp.founded}}</div>
                   </div>
-                  <div class="col-sm-6 col-md-6 col-lg-2 inside-card-block last-in-small" style="border-right:none;">
-                    <div class="card-text-header">Reliability</div>
+                  <div class="col-sm-6 col-md-6 col-lg-3 inside-card-block last-in-small" style="border-right:none;">
+                    <div class="card-text-header">Credibility</div>
                           <div class="card-text">
-                            <img src="questionable.png" />
-                            <!--i class="fa fa-check-circle" aria-hidden="true" style="color:#00d162; font-size:35px"></i-->
+                              <img v-if="comp.legitimacy === 'Checked'" src="/img/trust.png" :title="`${comp.legitimacy}`"/>
+                              <img v-else-if="comp.legitimacy === 'Questionable'" src="/img/questionable.png" :title="`${comp.legitimacy}`"/>
+                              <img v-else src="/img/avoid.png" :title="`${comp.legitimacy}`"/>
                           </div>
                   </div>
                 </div>
@@ -60,22 +62,28 @@
 </template>
 
 <script>
+    import Vue from 'vue'
     import axios from 'axios';
+    import VueSpinners from 'vue-spinners'
+    Vue.use(VueSpinners)
+
     export default {
         name: "CompanyList",
         data() {
             return {
                 companies: [],
-                errors: []
+                errors: [],
+                isLoading: true,
             }
         },
 
         // Fetches posts when the component is created.
         created() {
-            axios.get(`http://localhost:8000/api/companies/`)
+            axios.get(process.env.VUE_APP_DATA_URL+`/api/companies/`)
                 .then(response => {
                     // JSON responses are automatically parsed.
                     this.companies = response.data
+                    this.isLoading=false
                 })
                 .catch(e => {
                     this.errors.push(e)
@@ -86,7 +94,7 @@
 
 <style scoped>
 .card{
-	width:80%;
+	width:60%;
 	height:auto;
 }
 
@@ -106,7 +114,7 @@
 
 .card-title{
 	color: #3c3ecf;
-	font-size: 1.6rem;
+	font-size: 1rem;
 	font-family: "Arial Black", Gadget, sans-serif;
     text-align: center;
 }
@@ -118,7 +126,7 @@
 
 .card-text{
 	font-weight: 700;
-	font-size:1.1rem;
+	font-size:16px;
 	text-align: center;
 }
 
@@ -137,7 +145,11 @@
 .company-description{
 	margin: 0.5rem;
 }
-    
+
+#founded-block{
+    display: none;
+}
+
 @media (max-width: 992px) {
     .card-body {
         min-height: 200px;
@@ -153,6 +165,9 @@
     .card-img{
       margin-left: auto;
       margin-right: auto;
+    }
+    #founded-block{
+        display: block;
     }
 }
 
