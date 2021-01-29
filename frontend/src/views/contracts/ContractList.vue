@@ -12,9 +12,8 @@
             </div>
         </section>
         <!----------------------------------------------------------------------------------->
-
+        <tile :loading="isLoading" v-if="isLoading"></tile>
         <div class="container" style="margin: 25px auto 0; width:55%; background-color: white" :disabled="isLoading">
-              <tile :loading="isLoading" v-if="isLoading"></tile>
               <SingleContractComponent v-for="c in contracts" :key="c._id" :contractInfo="c" @cCheck="checkAction"></SingleContractComponent>
         </div>
 
@@ -38,7 +37,7 @@
         },
 
        created() {
-            axios.get(`http://localhost:8000/api/contracts`)
+            axios.get(process.env.VUE_APP_DATA_URL+`/api/contracts`)
                 .then(response => {
                     // JSON responses are automatically parsed.
                     this.contracts = JSON.parse(response.data)

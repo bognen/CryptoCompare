@@ -15,6 +15,8 @@ class Coin(models.Model):
     website = models.CharField(max_length=128, null=True, blank=True)
     description = models.CharField(max_length=5000, null=True, blank=True)
     maxSupply = models.DecimalField(max_digits=15, decimal_places=2, default=0.00)
+    blockTime = models.DecimalField(max_digits=15, decimal_places=2, default=0.00)
+    blockReward = models.DecimalField(max_digits=15, decimal_places=2, default=0.00)
     startDate = models.DateField()
     coinGecko = models.CharField(max_length=128, null=True, blank=True)
     # DYNAMIC FIELDS

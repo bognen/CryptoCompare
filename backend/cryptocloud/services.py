@@ -1,5 +1,5 @@
 # View returns all companies from Database
-
+import pymongo
 from cryptocloud.models import Coin
 from cryptocloud.models import CloudContract
 
@@ -22,4 +22,18 @@ def get_mined_coins(company_id):
         else:
             result += (", "+coinInfo.name)
         count += 1
+    return result
+
+
+def get_coin_price_prediction():
+    result=[]
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+    dbase = client["priceforecast"]
+    collection = dbase["price"]
+
+    for item in collection.find({},{ "_id": 0, "coin": 1, "prices": 1 }):
+        result.append({
+            "coin": item["coin"],
+            "prices": item["prices"],
+        })
     return result

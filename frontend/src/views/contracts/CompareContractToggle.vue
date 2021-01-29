@@ -5,7 +5,7 @@
            <div class="content" v-bind:class="{ handleOpened: isOpen }" >
              <transition name="slide">
               <div class="container box" v-if="isOpen">
-                  <div class="toggle-header">You have selected contracts for compare</div>
+                  <div class="toggle-header">You have selected {{selectedContracts}} of 2 contracts</div>
                   <div class="row toggle-row justify-content-center align-items-center">
                       <div class="col-lg-4 col-md-5 toggle-cube">
                           <component :is="currentFirstComponent" :contractDetail="firstContractDetails" :isFilled="isFirstFilled" @change="changeLayout"/>
@@ -27,14 +27,20 @@
 </template>
 
 <script>
+    import Vue from 'vue';
+    import VueCookies from 'vue-cookies'
+    Vue.use(VueCookies)
     import $ from 'jquery';
+    import axios from 'axios';
+    let numeral = require("numeral");
 
     export default {
         name: "CompareContractToggle",
         data(){
             return{
-                isOpen: false,           // toggle
-                selectedContracts: 0,    //
+                isOpen: false,
+                selectedContracts: 0,
+                cookiesArray: [],
 
                 currentFirstComponent: null,
                 currentSecondComponent: null,
@@ -66,35 +72,35 @@
                                               '<thead>' +
                                                 '<tr>' +
                                                   '<th scope="col"></th>' +
-                                                  '<th scope="col">First Contract Very Very Long Name</th>' +
-                                                  '<th scope="col">Second Contract Very Very Long Name</th>' +
+                                                  '<th scope="col text-center">{{firstContract.name}}</th>' +
+                                                  '<th scope="col text-center">{{secondContract.name}}</th>' +
                                                 '</tr>' +
                                               '</thead>' +
                                               '<tbody>' +
                                                 '<tr>' +
                                                   '<th scope="row">Profit Per Day</th>' +
-                                                  '<td class="text-center">$ 5,00</td>' +
-                                                  '<td class="text-center">$ 4,80</td>' +
+                                                  '<td class="text-center">$ {{firstContractDetails.dailyProfit | formatNumber}}</td>' +
+                                                  '<td class="text-center">$ {{secondContractDetails.dailyProfit | formatNumber}}</td>' +
                                                 '</tr>' +
                                                 '<tr>' +
                                                   '<th scope="row">Profit Per Week</th>' +
-                                                  '<td class="text-center">$ 34</td>' +
-                                                  '<td class="text-center">$ 28</td>' +
+                                                  '<td class="text-center">$ {{firstContractDetails.weeklyProfit | formatNumber}}</td>' +
+                                                  '<td class="text-center">$ {{secondContractDetails.weeklyProfit | formatNumber}}</td>' +
                                                 '</tr>' +
                                                 '<tr>' +
                                                   '<th scope="row">Profit Per Month</th>' +
-                                                  '<td class="text-center">$ 125</td>' +
-                                                  '<td class="text-center">$ 104</td>' +
+                                                  '<td class="text-center">$ {{firstContractDetails.monthlyProfit | formatNumber}}</td>' +
+                                                  '<td class="text-center">$ {{secondContractDetails.monthlyProfit | formatNumber}}</td>' +
                                                 '</tr>' +
                                                 '<tr>' +
                                                   '<th scope="row">Total Profit</th>' +
-                                                  '<td class="text-center">$ 800</td>' +
-                                                  '<td class="text-center">$ 752</td>' +
+                                                  '<td class="text-center">{{firstContractDetails.totalProfit}}</td>' +
+                                                  '<td class="text-center">{{secondContractDetails.totalProfit}}</td>' +
                                                 '</tr>' +
                                                 '<tr>' +
                                                   '<th scope="row">Profitablity</th>' +
-                                                  '<td class="text-center">22,4 %</td>' +
-                                                  '<td class="text-center">25,7 %</td>' +
+                                                  '<td class="text-center">{{firstContractDetails.profitability}}</td>' +
+                                                  '<td class="text-center">{{secondContractDetails.profitability}}</td>' +
                                                 '</tr>' +
                                               '</tbody>' +
                                             '</table>'+
@@ -108,18 +114,80 @@
                          '</div>',
                     data(){
                         return{
-                            test: null,
+                            firstContract: "",
+                            secondContract: "",
+                            firstContractDetails: "",
+                            secondContractDetails: "",
                         }
                     },
                     mounted: function () {
-                        this.test = this.$props.cForCompare1.name;
+                        this.firstContract = this.$props.cForCompare1;
+                        this.secondContract = this.$props.cForCompare2;
+                        this.firstContractDetails = this.calcContractParams(this.firstContract)
+                        this.secondContractDetails = this.calcContractParams(this.secondContract)
+                    },
+                    methods:{
+                         calcContractParams(contract){
+                            let contractParams = {
+                                "dailyProfit": 0,
+                                "weeklyProfit": 0,
+                                "monthlyProfit": 0,
+                                "totalProfit": "Not Applicable",
+                                "profitability": "Not Applicable"
+
+                            }
+                            axios.get('https://mineable-coins.p.rapidapi.com/coins?list='+contract.coin.token, {
+                                "method": "GET",
+                                "headers": {
+                                    "x-rapidapi-host": "mineable-coins.p.rapidapi.com",
+                                    "x-rapidapi-key": process.env.VUE_APP_RAPID_KEY
+                                }
+                            })
+                                .then(
+                                    coinDetailResponse =>{
+                                        this.coinParams= coinDetailResponse.data
+
+                                        let costPerDay = (contract.duration < 60) ? contract.price/contract.duration/30 : contract.price/60/30
+                                        let minedPerDay = parseFloat(contract.coin.blockReward) * (1440 / parseFloat(contract.coin.blockTime)) * (parseFloat(contract.hashRate) / (parseFloat(this.coinParams[0].network_hashrate) / 1000000000))
+                                        let revenuePerDay = minedPerDay * (parseFloat(this.coinParams[0].price))
+
+                                        contractParams.dailyProfit = revenuePerDay - costPerDay
+                                        contractParams.weeklyProfit = (revenuePerDay - costPerDay)*7
+                                        contractParams.monthlyProfit = (revenuePerDay - costPerDay)*30
+                                        if(contract.duration!=9999) {
+                                            let profit = revenuePerDay * 30 * parseFloat(contract.duration) - contract.price
+                                            contractParams.totalProfit = "$ "+profit.toFixed(2)
+                                            let profitability = (revenuePerDay * 30 * parseFloat(contract.duration) - contract.price) / contract.price * 100
+                                            contractParams.profitability = profitability.toFixed(2)+" %"
+                                        }
+
+                                    }
+                            )
+                            return contractParams
+                         }
+                    },
+                    filters:{
+                        "formatNumber": function (value) {
+                                return numeral(value).format("0.00");
+                        }
                     }
                 },
             },
+        created(){
+           let cookContract = Vue.$cookies.get('Compare_Contract');
+           let tContracts = JSON.parse(cookContract)
+           if(tContracts && tContracts.length>0){
+               tContracts.forEach((c) => {
+                   this.selectedContracts += 1
+                   this.addContractDetails(c);
+               })
+
+               this.open()
+           }
+        },
 
             mounted(){
                 this.$root.$on('toggle', contract => {
-                    //console.log(contract);
                     // Handles check/uncheck box
                     if (contract.checked) {
                         contract.checked = false
@@ -188,6 +256,8 @@
 
                 // Method adds a contracts to the toggle
                 addContractDetails(contract){
+                    // Add contract to Cookies Array
+                    this.addToCookiesArray(contract)
                     // If both slots are empty
                     if(!this.isFirstFilled && !this.isSecondFilled){
                         this.currentFirstComponent = this.sContract;
@@ -216,6 +286,9 @@
                 // Compares contract that user wants to remove, if it is not the first one
                 // than delete the second one
                 removeContractDetails(contract){
+                   // Remove from Cookies Array
+                   this.removeFromCookiesArray(contract)
+
                    if(this.firstContractDetails._id == contract._id){
                         this.currentFirstComponent = this.emptySlot;
                         this.firstContractDetails = "First";
@@ -263,6 +336,11 @@
 
                     // Set Contract Selected property back to false
                     this.revertContractSelection();
+
+                    // Clean out cookies
+                    //console.log("PRESENT!")
+                    Vue.$cookies.set('Compare_Contract', null);
+
                     // Close modal
                     this.close();
                 },
@@ -278,8 +356,27 @@
                 // The method sets checked property of a contract back to FALSE
                 revertContractSelection(){
                      this.$emit('deselectContracts');
-                }
+                },
 
+                // ***********************************************************************
+                // The method sets checked property of a contract back to FALSE
+                addToCookiesArray(contract){
+                    // Remove Description Parts in order to meet cookie max size criteria
+                    contract.description = ""
+                    contract.coin.description = ""
+                    contract.company.description = ""
+                    this.cookiesArray.push(contract)
+                    let stringifiedCookie =  JSON.stringify(this.cookiesArray);
+                    Vue.$cookies.set('Compare_Contract',stringifiedCookie);
+                },
+
+                // ***********************************************************************
+                // The method sets checked property of a contract back to FALSE
+                removeFromCookiesArray(contract){
+                    this.cookiesArray.splice( this.cookiesArray.indexOf(contract), 1 );
+                    let stringifiedCookie = JSON.stringify(this.cookiesArray);
+                    Vue.$cookies.set('Compare_Contract', stringifiedCookie);
+                },
             }
     }
 </script>

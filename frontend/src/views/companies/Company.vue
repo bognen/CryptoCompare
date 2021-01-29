@@ -11,9 +11,11 @@
                 </div>
             </div>
         </section>
-        <!----------------------------------------------------------------------------------->
-       <div style="margin-top:0.75rem;">
-              <div class="card mb-3" style="margin: 0 auto;">
+       <!----------------------------------------------------------------------------------->
+
+        <div style="margin-top:0.75rem;">
+              <tile :loading="isLoading" v-if="isLoading"></tile>
+              <div class="card mb-3" style="margin: 0 auto;" v-if="!isLoading">
               <div class="row no-gutters">
                 <div class="col-md-3">
                   <img v-bind:src="company.image" class="card-img" alt="...">
@@ -73,35 +75,6 @@
                    <div  v-for="cc in coinContract" :key="cc.CoinName" v-show="show === cc.CoinName" class="contract-row">
                        <!---------------------------------------------------------------------------------->
                    <SingleContractComponent v-for="contract in cc.Contracts" :key="contract._id" v-show="show === cc.CoinName"  :contractInfo="contract" @cCheck="checkAction"></SingleContractComponent>
-                       <!--
-                       <div class="row contract-row mt-3 ml-1 mr-2" v-for="contract in cc.Contracts" :key="contract._id" >
-                            <div class="col-lg-2 col-md-12 col-sm-12 company-contract-image-column">
-                                <img class="company-contract-image-icon" v-bind:src="cc.CoinImage" />
-                            </div>
-                            <div class="col-lg-10 col-md-12 col-sm-12 main-column">
-                                <div class="on-top-column"><a href="/contract"><span class="contract-name">{{contract.name}}</span></a>&nbsp;&nbsp;&nbsp;
-                                     <span class="contract-duration">{{contract.duration==9999?"Lifetime":contract.duration+" Months"}}</span></div>
-                                <div class="row">
-                                    <div class="col-lg-3 col-md-6 col-sm-6 company-contract-column-block">
-                                        <div class="column-header">Price:</div>
-                                        <div class="column-value">$ {{contract.price}}</div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-6 col-sm-6 company-contract-column-block last-when-small">
-                                        <div class="column-header">Hash Rate:</div>
-                                        <div class="column-value">{{contract.hashRate}} GH/s</div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-6 col-sm-6 company-contract-column-block">
-                                        <div class="column-header">Mines:</div>
-                                        <div class="column-value">{{cc.CoinName}}</div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-6 col-sm-6 company-contract-column-block last-block">
-                                        <div class="column-header">Company:</div>
-                                        <div class="column-value">{{contract.company.title}}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <---------------------------------------------------------------------------------->
                    </div>
 
               </div>
@@ -112,11 +85,14 @@
 </template>
 
 <script>
+    import Vue from 'vue'
     import axios from 'axios';
     import ContractComponent from "./../contracts/ContractComponent";
+    import VueSpinners from 'vue-spinners'
+    Vue.use(VueSpinners)
 
-    let companyRequestUrl = "http://localhost:8000/api/company/";
-    let coinContractRequestUrl = "http://localhost:8000/api/filtered-contract/";
+    let companyRequestUrl = process.env.VUE_APP_DATA_URL+"/api/company/";
+    let coinContractRequestUrl = process.env.VUE_APP_DATA_URL+"/api/filtered-contract/";
 
     export default {
         name: "Company",
@@ -127,7 +103,8 @@
                 coinContract: [],
                 show: '',
                 activeDiv: 0,
-                errors: []
+                errors: [],
+                isLoading: true,
             }
         },
 
@@ -138,6 +115,7 @@
                     this.company =  responses[0].data
                     this.coinContract = responses[1].data
                     this.show = this.coinContract[0].CoinName
+                    this.isLoading = false
 
                 }))
                 .catch(e => {
@@ -248,7 +226,7 @@
     .coin-bookmark{
         border: 1px solid #777777;
         cursor: pointer;
-        font-size: 17px;
+        font-size: 0.8rem;
         font-weight: bold;
     }
 
